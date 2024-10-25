@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Movie</title>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <style>
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .form-container input,
+        .form-container textarea {
+            flex: 1 1 200px;
+            padding: 10px;
+        }
+    </style>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        // Fetch movie details to prefill the form
+        async function loadMovieDetails() {
+            const response = await fetch(`/movies/${movieId}`);
+            const result = await response.json();
+            const movie = result.data;
+
+            document.getElementById('Series_Title').value = movie.Series_Title;
+            document.getElementById('Released_Year').value = movie.Released_Year;
+            document.getElementById('Genre').value = movie.Genre;
+            document.getElementById('IMDB_Rating').value = movie.IMDB_Rating;
+            document.getElementById('Certificate').value = movie.Certificate;
+            document.getElementById('Runtime').value = movie.Runtime;
+            document.getElementById('Overview').value = movie.Overview;
+            document.getElementById('Meta_score').value = movie.Meta_score;
+            document.getElementById('Director').value = movie.Director;
+            document.getElementById('Star1').value = movie.Star1;
+            document.getElementById('Star2').value = movie.Star2;
+            document.getElementById('Star3').value = movie.Star3;
+            document.getElementById('Star4').value = movie.Star4;
+            document.getElementById('No_of_Votes').value = movie.No_of_Votes;
+            document.getElementById('Gross').value = movie.Gross;
+        }
+
+        // Update movie details
+        async function updateMovie(event) {
+            event.preventDefault();  // Prevent the form from submitting the traditional way
+
+            const updatedMovie = {
+                Series_Title: document.getElementById('Series_Title').value,
+                Released_Year: document.getElementById('Released_Year').value,
+                Genre: document.getElementById('Genre').value,
+                IMDB_Rating: document.getElementById('IMDB_Rating').value,
+                Certificate: document.getElementById('Certificate').value,
+                Runtime: document.getElementById('Runtime').value,
+                Overview: document.getElementById('Overview').value,
+                Meta_score: document.getElementById('Meta_score').value,
+                Director: document.getElementById('Director').value,
+                Star1: document.getElementById('Star1').value,
+                Star2: document.getElementById('Star2').value,
+                Star3: document.getElementById('Star3').value,
+                Star4: document.getElementById('Star4').value,
+                No_of_Votes: document.getElementById('No_of_Votes').value,
+                Gross: document.getElementById('Gross').value
+            };
+
+            try {
+                const response = await fetch(`/update/${movieId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedMovie)
+                });
+
+                const result = await response.json();
+
+                // If the update is successful, redirect to the home page
+                if (result.success) {
+                    window.location.href = '/';  // Redirect to home page after updating
+                } else {
+                    alert('Failed to update the movie');
+                }
+
+            } catch (error) {
+                console.error('Error updating movie:', error);
+                alert('Error updating the movie. Please try again.');
+            }
+        }
+        window.onload = loadMovieDetails;
+    </script>
+</head>
+<body>
+    <h1>Update Movie</h1>
+
+    <form class="form-container" onsubmit="updateMovie(event)">
+        <input type="text" id="Series_Title" placeholder="Series Title" required>
+        <input type="text" id="Released_Year" placeholder="Released Year" required>
+        <input type="text" id="Genre" placeholder="Genre" required>
+        <input type="text" id="IMDB_Rating" placeholder="IMDB Rating" required>
+        <input type="text" id="Certificate" placeholder="Certificate" required>
+        <input type="text" id="Runtime" placeholder="Runtime" required>
+        <input type="text" id="Overview" placeholder="Overview" required>
+        <input type="text" id="Meta_score" placeholder="Meta score" required>
+        <input type="text" id="Director" placeholder="Director" required>
+        <input type="text" id="Star1" placeholder="Star1" required>
+        <input type="text" id="Star2" placeholder="Star2" required>
+        <input type="text" id="Star3" placeholder="Star3" required>
+        <input type="text" id="Star4" placeholder="Star4" required>
+        <input type="text" id="No_of_Votes" placeholder="Number of Votes" required>
+        <input type="text" id="Gross" placeholder="Gross Earnings" required>
+        <button type="submit">Update Movie</button>
+    </form>
+</body>
+</html>

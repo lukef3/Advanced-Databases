@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies</title>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <style>
+        /* Add scrollable table styles */
+        .scrollable-table {
+            width: 95vw;
+            max-width: 100vw;
+            height: 60vh;
+            overflow-y: scroll;
+        }
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        th {
+            top: 0;
+            position: sticky;
+        }
+        th, td {
+            padding: 8px;
+        }
+        .form-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .form-container button {
+            margin-top: 10px;
+            padding: 10px 15px;
+        }
+        body {
+            justify-items: center;
+        }
+    </style>
+    <script>
+        // Fetch all movies and display them in a table
+        async function getMovies() {
+            const response = await fetch('/movies');
+            const result = await response.json();
+            console.log(result);
+
+            const moviesTable = document.getElementById('moviesTableBody');
+            moviesTable.innerHTML = ''; // Clear existing rows
+
+            result.data.forEach(movie => {
+                const row = document.createElement('tr');
+                
+                // Append cells for each movie attribute and add update/delete buttons
+                row.innerHTML = `
+                    <td><img src=${movie.Poster_Link}></td>
+                    <td>${movie.Series_Title}</td>
+                    <td>${movie.Released_Year}</td>
+                    <td>${movie.Genre}</td>
+                    <td>${movie.IMDB_Rating}</td>
+                    <td>${movie.Certificate}</td>
+                    <td>${movie.Runtime}</td>
+                    <td>${movie.Meta_score}</td>
+                    <td>${movie.Director}</td>
+                    <td>${movie.No_of_Votes}</td>
+                    <td>${movie.Gross}</td>
+                    <td><button onclick="window.location.href = '/updatemovie.html?id=${movie._id}'">Update</button></td>
+                    <td><button onclick="deleteMovie('${movie._id}')">Delete</button></td>
+                `;
+                
+                moviesTable.appendChild(row);
+            });
+        }
+
+        // Delete a movie
+        async function deleteMovie(id) {
+            const confirmed = confirm('Are you sure you want to delete this movie?');
+            if (!confirmed) return;
+
+            try {
+                // Fetch the movie first to get the _rev
+                const getResponse = await fetch(`/movies/${id}`);
+                const movieData = await getResponse.json();
+
+                if (!movieData.success) {
+                    alert('Failed to retrieve movie details for deletion.');
+                    return;
+                }
+
+                const rev = movieData.data._rev; // Get the _rev from the movie
+
+                // Now proceed to delete using _id and _rev
+                const deleteResponse = await fetch(`/delete/${id}?rev=${rev}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await deleteResponse.json();
+                if (result.success) {
+                    console.log('Movie deleted successfully');
+                    getMovies(); // Refresh the table
+                } else {
+                    alert('Failed to delete movie.');
+                }
+
+            } catch (error) {
+                console.error('Error deleting movie:', error);
+                alert('Error deleting the movie. Please try again.');
+            }
+        }
+        // Load movies when the page loads
+        window.onload = getMovies;
+    </script>
+</head>
+<body>
+    <h1>Movie CRUD App</h1>
+
+    <!-- Display movies in a scrollable table -->
+    <div style="margin-top: 20px;">
+        <div class="scrollable-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Poster</th>
+                        <th>Title</th>
+                        <th>Year</th>
+                        <th>Genre</th>
+                        <th>IMDB Rating</th>
+                        <th>Certificate</th>
+                        <th>Runtime</th>
+                        <th>Meta Score</th>
+                        <th>Director</th>
+                        <th>Votes</th>
+                        <th>Gross</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="moviesTableBody">
+                    <!-- Fetched movies will be displayed here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="form-container">
+            <button onclick="window.location.href = 'addmovie.html';">Add New Movie</button>
+        </div>
+    </div>
+</body>
+</html>

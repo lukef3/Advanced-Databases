@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Movie</title>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <style>
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .form-container input,
+        .form-container textarea {
+            flex: 1 1 200px;
+            padding: 10px;
+        }
+    </style>
+    <script>
+        // Add movie details
+        async function addMovie(event) {
+            event.preventDefault();  // Prevent form submission
+
+            const newMovie = {
+                Poster_Link: document.getElementById('Poster_Link').value,
+                Series_Title: document.getElementById('Series_Title').value,
+                Released_Year: document.getElementById('Released_Year').value,
+                Certificate: document.getElementById('Certificate').value,
+                Runtime: document.getElementById('Runtime').value,
+                Genre: document.getElementById('Genre').value,
+                IMDB_Rating: document.getElementById('IMDB_Rating').value,
+                Overview: document.getElementById('Overview').value,
+                Meta_score: document.getElementById('Meta_score').value,
+                Director: document.getElementById('Director').value,
+                Star1: document.getElementById('Star1').value,
+                Star2: document.getElementById('Star2').value,
+                Star3: document.getElementById('Star3').value,
+                Star4: document.getElementById('Star4').value,
+                No_of_Votes: document.getElementById('No_of_Votes').value,
+                Gross: document.getElementById('Gross').value
+            };
+
+            try {
+                const response = await fetch('/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newMovie)
+                });
+
+                const result = await response.json();
+
+                // Check if the add was successful and redirect
+                if (result.success) {
+                    window.location.href = '/';  // Redirect to home page
+                } else {
+                    alert('Failed to add the movie');
+                }
+
+            } catch (error) {
+                console.error('Error adding movie:', error);
+                alert('Error adding the movie. Please try again.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Add Movie</h1>
+
+    <form class="form-container" onsubmit="addMovie(event)">
+        <input type="text" id="Poster_Link" placeholder="Poster Link" required>
+        <input type="text" id="Series_Title" placeholder="Series Title" required>
+        <input type="text" id="Released_Year" placeholder="Released Year" required>
+        <input type="text" id="Certificate" placeholder="Certificate" required>
+        <input type="text" id="Runtime" placeholder="Runtime" required>
+        <input type="text" id="Genre" placeholder="Genre" required>
+        <input type="text" id="IMDB_Rating" placeholder="IMDB Rating" required>
+        <input type="text" id="Overview" placeholder="Overview" required>
+        <input type="text" id="Meta_score" placeholder="Meta score" required>
+        <input type="text" id="Director" placeholder="Director" required>
+        <input type="text" id="Star1" placeholder="Star1" required>
+        <input type="text" id="Star2" placeholder="Star2" required>
+        <input type="text" id="Star3" placeholder="Star3" required>
+        <input type="text" id="Star4" placeholder="Star4" required>
+        <input type="text" id="No_of_Votes" placeholder="Number of Votes" required>
+        <input type="text" id="Gross" placeholder="Gross Earnings" required>
+        <button type="submit">Add Movie</button>
+    </form>
+</body>
+</html>
