@@ -1,9 +1,0 @@
-2024/10/22-16:11:14.497 2a10 Recovering log #22
-2024/10/22-16:11:14.607 2a10 Level-0 table #24: started
-2024/10/22-16:11:14.611 2a10 Level-0 table #24: 2453 bytes OK
-2024/10/22-16:11:14.621 2a10 Delete type=0 #22
-2024/10/22-16:11:14.621 2a10 Delete type=3 #20
-2024/10/22-16:11:15.118 7434 Compacting 3@0 + 1@1 files
-2024/10/22-16:11:15.134 7434 Generated table #26@0: 2034 keys, 605392 bytes
-2024/10/22-16:11:15.134 7434 Compacted 3@0 + 1@1 files => 605392 bytes
-2024/10/22-16:11:15.140 7434 compacted to: files[ 0 1 0 0 0 0 0 ]
