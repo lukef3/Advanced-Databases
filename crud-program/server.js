@@ -117,13 +117,11 @@ app.put('/update/:id', async (req, res) => {
 app.delete('/delete/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
-        const rev = req.query.rev; // Get the _rev from the query parameter
+        const rev = req.query.rev;
 
         if (!rev) {
             return res.status(400).json({ success: false, error: "Missing _rev for deletion." });
         }
-
-        // Use both _id and _rev to delete the movie
         const response = await localDB.remove(movieId, rev);
 
         res.status(200).json({ success: true, data: response });
