@@ -18,9 +18,8 @@
         }
     </style>
     <script>
-        // Add movie details
         async function addMovie(event) {
-            event.preventDefault();  // Prevent form submission
+            event.preventDefault(); 
 
             const newMovie = {
                 Poster_Link: document.getElementById('Poster_Link').value,
@@ -52,9 +51,8 @@
 
                 const result = await response.json();
 
-                // Check if the add was successful and redirect
                 if (result.success) {
-                    window.location.href = '/';  // Redirect to home page
+                    window.location.href = '/';  
                 } else {
                     alert('Failed to add the movie');
                 }
@@ -68,7 +66,6 @@
 </head>
 <body>
     <h1>Add Movie</h1>
-
     <form class="form-container" onsubmit="addMovie(event)">
         <input type="text" id="Poster_Link" placeholder="Poster Link" required>
         <input type="text" id="Series_Title" placeholder="Series Title" required>

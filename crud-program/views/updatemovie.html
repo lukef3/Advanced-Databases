@@ -20,8 +20,6 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id');
-
-        // Fetch movie details to prefill the form
         async function loadMovieDetails() {
             const response = await fetch(`/movies/${movieId}`);
             const result = await response.json();
@@ -43,10 +41,8 @@
             document.getElementById('No_of_Votes').value = movie.No_of_Votes;
             document.getElementById('Gross').value = movie.Gross;
         }
-
-        // Update movie details
         async function updateMovie(event) {
-            event.preventDefault();  // Prevent the form from submitting the traditional way
+            event.preventDefault();  
 
             const updatedMovie = {
                 Series_Title: document.getElementById('Series_Title').value,
@@ -77,9 +73,8 @@
 
                 const result = await response.json();
 
-                // If the update is successful, redirect to the home page
                 if (result.success) {
-                    window.location.href = '/';  // Redirect to home page after updating
+                    window.location.href = '/';  
                 } else {
                     alert('Failed to update the movie');
                 }

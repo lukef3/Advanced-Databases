@@ -1,11 +1,9 @@
 const express = require('express');
 const PouchDB = require('pouchdb');
 
-// Initialize Express and PouchDB (local and remote)
 const app = express();
 const localDB = new PouchDB('movies_local');
-const remoteDB = new PouchDB('http://admin:mtu1234@127.0.0.1:5984/movies');
-const cloudantDB = new PouchDB('https://apikey-v2-1jsyzxnf10huzbh42l2kd3zwqp80mok7zg062c73n64n:e0d771e48d1da891389652a6e556f671@9e25c456-bb25-4ff5-9e6d-29de265c694e-bluemix.cloudantnosqldb.appdomain.cloud/movies', {
+const remoteDB = new PouchDB('https://apikey-v2-1jsyzxnf10huzbh42l2kd3zwqp80mok7zg062c73n64n:e0d771e48d1da891389652a6e556f671@9e25c456-bb25-4ff5-9e6d-29de265c694e-bluemix.cloudantnosqldb.appdomain.cloud/movies', {
     auth: {
         username: 'apikey-v2-1jsyzxnf10huzbh42l2kd3zwqp80mok7zg062c73n64n',
         password: 'e0d771e48d1da891389652a6e556f671'
@@ -13,16 +11,12 @@ const cloudantDB = new PouchDB('https://apikey-v2-1jsyzxnf10huzbh42l2kd3zwqp80mo
     }
 );
 
-// Middleware to parse JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the "views" folder
 app.use(express.static('views'));
 
-// Sync local PouchDB with remote CouchDB
-
-localDB.sync(cloudantDB, {
+localDB.sync(remoteDB, {
     live: true,    
     retry: true  
 }).on('change', (info) => {
@@ -30,10 +24,6 @@ localDB.sync(cloudantDB, {
 }).on('error', (err) => {
     console.error('Sync error', err);
 });
-
-// Routes for CRUD operations
-
-// Create a new movie (POST)
 
 app.post('/add', async (req, res) => {
     try {
@@ -64,9 +54,6 @@ app.post('/add', async (req, res) => {
     }
 });
 
-// Read all movies (GET)
-
-
 app.get('/movies', async (req, res) => {
     try {
         const result = await localDB.allDocs({ include_docs: true });
@@ -76,9 +63,6 @@ app.get('/movies', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
-// Read a single movie by ID (GET)
-
 
 app.get('/movies/:id', async (req, res) => {
     try {
@@ -91,9 +75,6 @@ app.get('/movies/:id', async (req, res) => {
     }
 });
 
-
-
-// Update a movie (PUT)
 app.put('/update/:id', async (req, res) => {
     try {
         const movie = await localDB.get(req.params.id);
@@ -123,9 +104,6 @@ app.put('/update/:id', async (req, res) => {
     }
 });
 
-// Delete a movie (DELETE)
-
-
 app.delete('/delete/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
@@ -140,7 +118,6 @@ app.delete('/delete/:id', async (req, res) => {
     }
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
