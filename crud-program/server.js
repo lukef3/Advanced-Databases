@@ -5,6 +5,13 @@ const PouchDB = require('pouchdb');
 const app = express();
 const localDB = new PouchDB('movies_local');
 const remoteDB = new PouchDB('http://admin:mtu1234@127.0.0.1:5984/movies');
+const cloudantDB = new PouchDB('https://apikey-v2-1jsyzxnf10huzbh42l2kd3zwqp80mok7zg062c73n64n:e0d771e48d1da891389652a6e556f671@9e25c456-bb25-4ff5-9e6d-29de265c694e-bluemix.cloudantnosqldb.appdomain.cloud/movies', {
+    auth: {
+        username: 'apikey-v2-1jsyzxnf10huzbh42l2kd3zwqp80mok7zg062c73n64n',
+        password: 'e0d771e48d1da891389652a6e556f671'
+      }
+    }
+);
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -14,7 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('views'));
 
 // Sync local PouchDB with remote CouchDB
-localDB.sync(remoteDB, {
+
+localDB.sync(cloudantDB, {
     live: true,    
     retry: true  
 }).on('change', (info) => {
@@ -26,9 +34,9 @@ localDB.sync(remoteDB, {
 // Routes for CRUD operations
 
 // Create a new movie (POST)
+
 app.post('/add', async (req, res) => {
     try {
-        // Create a new movie document, CouchDB will automatically generate the _id
         const movie = {
             Poster_Link: req.body.Poster_Link,
             Series_Title: req.body.Series_Title,
@@ -48,9 +56,8 @@ app.post('/add', async (req, res) => {
             Gross: req.body.Gross
         };
 
-        const response = await localDB.post(movie);  // Using `post` to let CouchDB auto-generate the _id
+        const response = await localDB.post(movie);
 
-        // Return success response
         res.status(200).json({ success: true, data: response });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -58,6 +65,8 @@ app.post('/add', async (req, res) => {
 });
 
 // Read all movies (GET)
+
+
 app.get('/movies', async (req, res) => {
     try {
         const result = await localDB.allDocs({ include_docs: true });
@@ -69,10 +78,12 @@ app.get('/movies', async (req, res) => {
 });
 
 // Read a single movie by ID (GET)
+
+
 app.get('/movies/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
-        const movie = await localDB.get(movieId); // Fetch movie by ID
+        const movie = await localDB.get(movieId);
         res.status(200).json({ success: true, data: movie });
     } catch (error) {
         console.error('Error fetching movie:', error);
@@ -87,7 +98,6 @@ app.put('/update/:id', async (req, res) => {
     try {
         const movie = await localDB.get(req.params.id);
         
-        // Update the fields
         movie.Poster_Link = req.body.Poster_Link || movie.Poster_Link;
         movie.Series_Title = req.body.Series_Title || movie.Series_Title;
         movie.Released_Year = req.body.Released_Year || movie.Released_Year;
@@ -114,14 +124,13 @@ app.put('/update/:id', async (req, res) => {
 });
 
 // Delete a movie (DELETE)
+
+
 app.delete('/delete/:id', async (req, res) => {
     try {
         const movieId = req.params.id;
         const rev = req.query.rev;
 
-        if (!rev) {
-            return res.status(400).json({ success: false, error: "Missing _rev for deletion." });
-        }
         const response = await localDB.remove(movieId, rev);
 
         res.status(200).json({ success: true, data: response });
